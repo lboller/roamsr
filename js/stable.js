@@ -223,20 +223,20 @@ roamsr.loadCards = async (limits, dateBasis = new Date()) => {
   // Query for all cards and their history
   var mainQuery = `[
     :find (pull ?card [
-      :block/string 
-      :block/uid 
-      {:block/refs [:node/title]} 
+      :block/string
+      :block/uid
+      {:block/refs [:node/title]}
       {:block/_refs [:block/uid :block/string {:block/_children [:block/uid {:block/refs [:node/title]}]} {:block/refs [:node/title]} {:block/page [:block/uid]}]}
       {:block/_children ...}
     ])
-    :where 
-      [?card :block/refs ?srPage] 
-      [?srPage :node/title "${roamsr.settings.mainTag}"] 
-      (not-join [?card] 
-        [?card :block/refs ?flagPage] 
+    :where
+      [?card :block/refs ?srPage]
+      [?srPage :node/title "${roamsr.settings.mainTag}"]
+      (not-join [?card]
+        [?card :block/refs ?flagPage]
         [?flagPage :node/title "${roamsr.settings.flagTag}"])
-      (not-join [?card] 
-        [?card :block/refs ?queryPage] 
+      (not-join [?card]
+        [?card :block/refs ?queryPage]
         [?queryPage :node/title "query"])
     ]`
   var mainQueryResult = await window.roamAlphaAPI.q(mainQuery);
@@ -256,19 +256,19 @@ roamsr.loadCards = async (limits, dateBasis = new Date()) => {
   // Query for today's review
   var todayUid = roamsr.getRoamDate().uid;
   var todayQuery = `[
-    :find (pull ?card 
-      [:block/uid 
-      {:block/refs [:node/title]} 
-      {:block/_refs [{:block/page [:block/uid]}]}]) 
+    :find (pull ?card
+      [:block/uid
+      {:block/refs [:node/title]}
+      {:block/_refs [{:block/page [:block/uid]}]}])
       (pull ?review [:block/refs])
-    :where 
-      [?reviewParent :block/children ?review] 
-      [?reviewParent :block/page ?todayPage] 
-      [?todayPage :block/uid "${todayUid}"] 
-      [?reviewParent :block/refs ?reviewPage] 
-      [?reviewPage :node/title "roam/sr/review"] 
-      [?review :block/refs ?card] 
-      [?card :block/refs ?srPage] 
+    :where
+      [?reviewParent :block/children ?review]
+      [?reviewParent :block/page ?todayPage]
+      [?todayPage :block/uid "${todayUid}"]
+      [?reviewParent :block/refs ?reviewPage]
+      [?reviewPage :node/title "roam/sr/review"]
+      [?review :block/refs ?card]
+      [?card :block/refs ?srPage]
       [?srPage :node/title "${roamsr.settings.mainTag}"]
     ]`
   var todayQueryResult = await window.roamAlphaAPI.q(todayQuery);
@@ -326,11 +326,11 @@ roamsr.addBasicStyles = () => {
   .roamsr-widget__review-button {
     color: #5C7080 !important;
   }
-  
+
   .roamsr-widget__review-button:hover {
     color: #F5F8FA !important;
   }
-  
+
   .roamsr-return-button-container {
     z-index: 100000;
     margin: 5px 0px 5px 45px;
@@ -408,7 +408,7 @@ roamsr.showAnswerAndCloze = (yes) => {
     .roam-article .rm-reference-main,
     .roam-article .rm-block-children
     {
-      visibility: hidden;  
+      visibility: hidden;
     }
 
     .roam-article .rm-${clozeStyle} {
@@ -537,7 +537,7 @@ roamsr.flagCard = () => {
       string: card.string + " #" + roamsr.settings.flagTag
     }
   });
-  
+
   var j = roamsr.getCurrentCard().isNew ? 0 : 1;
 
   var extraCard = roamsr.state.extraCards[j].shift();
@@ -874,65 +874,65 @@ roamsr.addWidget = () => {
 /* ====== KEYBINDINGS ====== */
 roamsr.processKey = (e) => {
   // console.log("alt: " + e.altKey + "  shift: " + e.shiftKey + "  ctrl: " + e.ctrlKey + "   code: " + e.code + "   key: " + e.key);
-  if (document.activeElement.type == "textarea" || !location.href.includes(roamsr.getCurrentCard().uid)) {
-    return;
-  }
+  // if (document.activeElement.type == "textarea" || !location.href.includes(roamsr.getCurrentCard().uid)) {
+  //   return;
+  // }
 
-  var responses = roamsr.getCurrentCard().algorithm(roamsr.getCurrentCard().history);
-  var handleNthResponse = async (n) => {
-    console.log("Handling response: " + n)
-    if (n >= 0 && n < responses.length) {
-      const res = responses[n];
-      if (res.interval != 0) {
-        roamsr.responseHandler(roamsr.getCurrentCard(), res.interval, res.signal.toString());
-      } else {
-        await roamsr.responseHandler(roamsr.getCurrentCard(), res.interval, res.signal.toString());
-      }
-      roamsr.stepToNext();
-    }
-  }
+  // var responses = roamsr.getCurrentCard().algorithm(roamsr.getCurrentCard().history);
+  // var handleNthResponse = async (n) => {
+  //   console.log("Handling response: " + n)
+  //   if (n >= 0 && n < responses.length) {
+  //     const res = responses[n];
+  //     if (res.interval != 0) {
+  //       roamsr.responseHandler(roamsr.getCurrentCard(), res.interval, res.signal.toString());
+  //     } else {
+  //       await roamsr.responseHandler(roamsr.getCurrentCard(), res.interval, res.signal.toString());
+  //     }
+  //     roamsr.stepToNext();
+  //   }
+  // }
 
-    // Bindings for 123456789
-    if (e.code.includes("Digit")) {
-      var n = Math.min(parseInt(e.code.replace("Digit", "")) - 1, responses.length - 1);
-      handleNthResponse(n);
-      return;
-    }
+  //   // Bindings for 123456789
+  //   if (e.code.includes("Digit")) {
+  //     var n = Math.min(parseInt(e.code.replace("Digit", "")) - 1, responses.length - 1);
+  //     handleNthResponse(n);
+  //     return;
+  //   }
 
-    // Bindings for hjkl
-    const letters = ["KeyH", "KeyJ", "KeyK", "KeyL"];
-    if (letters.includes(e.code)) {
-      var n = Math.min(letters.indexOf(e.code), responses.length - 1);
-      handleNthResponse(n);
-      return;
-    }
+  //   // Bindings for hjkl
+  //   const letters = ["KeyH", "KeyJ", "KeyK", "KeyL"];
+  //   if (letters.includes(e.code)) {
+  //     var n = Math.min(letters.indexOf(e.code), responses.length - 1);
+  //     handleNthResponse(n);
+  //     return;
+  //   }
 
-    if (e.code == "Space") {
-      roamsr.showAnswerAndCloze(false); roamsr.addResponseButtons();
-      return;
-    }
+  //   if (e.code == "Space") {
+  //     roamsr.showAnswerAndCloze(false); roamsr.addResponseButtons();
+  //     return;
+  //   }
 
-    if (e.code == "KeyF") {
-      roamsr.flagCard().then(() => {
-        roamsr.stepToNext();
-      });
-      return;
-    }
+  //   if (e.code == "KeyF") {
+  //     roamsr.flagCard().then(() => {
+  //       roamsr.stepToNext();
+  //     });
+  //     return;
+  //   }
 
-    if (e.code == "KeyS") {
-      roamsr.stepToNext();
-      return;
-    }
+  //   if (e.code == "KeyS") {
+  //     roamsr.stepToNext();
+  //     return;
+  //   }
 
-    if (e.code == "KeyD" && e.altKey) {
-      roamsr.endSession();
-      return;
-    }
+  //   if (e.code == "KeyD" && e.altKey) {
+  //     roamsr.endSession();
+  //     return;
+  //   }
 };
 
 roamsr.processKeyAlways = (e) => {
   // Alt+enter TODO
-} 
+}
 
 roamsr.addKeyListener = () => {
     document.addEventListener("keydown", roamsr.processKey);
