@@ -558,6 +558,15 @@ roamsr.stepToNext = async () => {
   roamsr.updateCounters();
 };
 
+roamsr.stepBack = async () => {
+  if (roamsr.state.currentIndex == 0) {
+  } else {
+    roamsr.state.currentIndex--;
+    roamsr.goToCurrentCard();
+  // }
+  roamsr.updateCounters();
+};
+
 roamsr.goToCurrentCard = async () => {
   window.onhashchange = () => { };
   roamsr.showAnswerAndCloze(true);
@@ -731,8 +740,13 @@ roamsr.addContainer = () => {
       innerHTML: "Skip.",
       onclick: roamsr.stepToNext
     });
+    var backButton = Object.assign(document.createElement("button"), {
+      className: "bp3-button roamsr-button",
+      innerHTML: "Back.",
+      onclick: roamsr.stepBack
+    });
     flagButtonContainer.style.cssText = "justify-content: space-between;";
-    flagButtonContainer.append(flagButton, skipButton);
+    flagButtonContainer.append(backButton, flagButton, skipButton);
 
     var responseArea = Object.assign(document.createElement("div"), {
       className: "flex-h-box roamsr-container__response-area"
