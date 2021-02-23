@@ -316,6 +316,10 @@ roamsr.loadCards = async (limits, dateBasis = new Date()) => {
 
   // Sort (new to front)
   cards = cards.sort((a, b) => a.history.length - b.history.length);
+  // cards = cards = cards.sort((a, b) => b.decks.includes(".UI1") - a.decks.includes(".UI1"));
+  cards = cards = cards.sort((a, b) => b.decks.includes(".NI2") - a.decks.includes(".NI2"));
+  cards = cards = cards.sort((a, b) => b.decks.includes(".UI1") - a.decks.includes(".UI1"));
+  cards = cards = cards.sort((a, b) => b.decks.includes(".now") - a.decks.includes(".now"));
   return cards;
 };
 
