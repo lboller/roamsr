@@ -563,7 +563,7 @@ roamsr.stepBack = async () => {
   } else {
     roamsr.state.currentIndex--;
     roamsr.goToCurrentCard();
-  // }
+  }
   roamsr.updateCounters();
 };
 
