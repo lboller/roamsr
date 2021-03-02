@@ -184,7 +184,7 @@ roamsr.loadCards = async (limits, dateBasis = new Date()) => {
     let algorithm;
 
     if (decks && decks.length > 0) {
-      preferredDeck = roamsr.settings.customDecks.filter(customDeck => customDeck.tag == decks[decks.length - 1])[0];
+      preferredDeck = roamsr.settings.customDecks.filter(customDeck => customDeck.tag == decks[0])[0];
     } else preferredDeck = roamsr.settings.defaultDeck;
 
     let scheduler = preferredDeck.scheduler || preferredDeck.algorithm;
